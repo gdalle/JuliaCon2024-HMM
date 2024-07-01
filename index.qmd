@@ -1,0 +1,17 @@
+---
+title: "Fast and generic Hidden Markov Models"
+author: "Guillaume Dalle"
+engine: julia
+format: revealjs
+execute:
+    echo: true
+---
+
+# Introduction
+
+## Dependencies
+
+```{julia}
+using Distributions
+using HiddenMarkovModels
+```
