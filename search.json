@@ -4,13 +4,20 @@
     "href": "index.html#dependencies",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Dependencies",
-    "text": "Dependencies\n\nusing Distributions\nusing HiddenMarkovModels"
+    "text": "Dependencies\nusing Distributions\nusing HiddenMarkovModels"
   },
   {
-    "objectID": "slides.html",
-    "href": "slides.html",
-    "title": "A julia engine notebook",
-    "section": "",
-    "text": "1 + 2"
+    "objectID": "index.html#what-is-an-hmm",
+    "href": "index.html#what-is-an-hmm",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "What is an HMM?",
+    "text": "What is an HMM?\nSee Rabiner (1989)"
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "References",
+    "text": "References\n\n\nRabiner, L. R. 1989. “A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition.” Proceedings of the IEEE 77 (2): 257–86. https://doi.org/cswph2."
   }
 ]
