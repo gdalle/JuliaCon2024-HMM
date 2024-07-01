@@ -1,6 +1,14 @@
 ---
 title: "Fast and generic Hidden Markov Models"
-author: "Guillaume Dalle"
+author:
+  - name: Guillaume Dalle
+    orcid: 0000-0003-4866-1687
+    email: guillaume.dalle@epfl.ch
+    affiliation: 
+      - name: École Polytechnique Fédérale de Lausanne
+      - department: IdePHICS, INDY & SPOC laboratories
+date: "2024-07-12"
+bibliography: HMM.bib
 engine: julia
 format: revealjs
 execute:
@@ -15,3 +23,14 @@ execute:
 using Distributions
 using HiddenMarkovModels
 ```
+
+## What is an HMM?
+
+See @rabinerTutorialHiddenMarkov1989
+
+# Appendix
+
+## References
+
+::: {#refs}
+:::
