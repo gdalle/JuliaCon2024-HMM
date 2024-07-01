@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html#dependencies",
+    "href": "index.html#dependencies",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Dependencies",
+    "text": "Dependencies\n\nusing Distributions\nusing HiddenMarkovModels"
+  },
+  {
+    "objectID": "slides.html",
+    "href": "slides.html",
+    "title": "A julia engine notebook",
+    "section": "",
+    "text": "1 + 2"
+  }
+]
