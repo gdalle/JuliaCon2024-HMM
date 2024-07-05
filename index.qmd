@@ -12,6 +12,8 @@ bibliography: HMM.bib
 engine: julia
 format:
   revealjs:
+    width: 1280
+    height: 720
     slide-number: true
     overview: true
     code-line-numbers: false
@@ -33,7 +35,7 @@ execute:
 
 :::: {.columns}
 
-::: {.column width=70%}
+::: {.column width=65%}
 - Statistical model for a temporal process
 - Hidden state $X_t$ evolves through time
 - Observations $Y_t$ depend on the state
@@ -41,7 +43,7 @@ execute:
 :::
 
 ::: {.column width="30%"}
-![The first Markov chain [@vonhilgersFiveGreatestApplications2006]](./images/eugene_oneguin.png)
+![The first Markov chain [@vonhilgersFiveGreatestApplications2006]](./images/eugene_oneguin.png){height=400}
 :::
 
 ::::
@@ -56,15 +58,25 @@ execute:
 
 ## Some notation
 
-- $N$ possible states, $M$ possible observations
-- Initial state probabilities $p \in [0, 1]^{N}$
-- Transition matrix $A \in [0, 1]^{N \times N}$
-- Emission matrix $B \in [0, 1]^{N \times M}$
-- Parameters $\theta = (p, A, B)$
+:::: {.columns}
 
+::: {.column width="45%"}
+- $N$ states, $M$ observations
+- Initial probabilities $p$
+- Transition matrix $A$
+- Emission matrix $B$
+:::
+
+::: {.column width="5%"}
+:::
+
+::: {.column width="50%"}
 $$\mathbb{P}(X_0 = i) = p_i$$
 $$\mathbb{P}(X_{t} = j | X_{t-1} = i) = A_{i,j}$$
 $$\mathbb{P}(Y_{t} = k | X_t = i) = B_{i,k}$$
+:::
+
+::::
 
 ## Example: my JuliaCon attendance
 
@@ -91,7 +103,7 @@ $$\pi = \begin{pmatrix} 0 & 0 & 1 \end{pmatrix}$$
 $$A = \begin{pmatrix} 2/3 & 1/3 & 0 \\ 1/6 & 3/6 & 2/6 \\ 0 & 1 & 0 \end{pmatrix}$$
 :::
 
-::: {.column width="10%"}
+::: {.column width="5%"}
 :::
 
 ::: {.column width="45%"}
@@ -102,7 +114,7 @@ stateDiagram-v2
   state "JuliaCon\nin Europe" as europe
   state "JuliaCon\noverseas" as overseas
   state "I'm attending" as attending
-  state "I'm not attending" as missing
+  state "I'm missing" as missing
   online --> attending: 3/3
   overseas --> missing: 6/6
   europe --> attending: 1/2
@@ -128,7 +140,7 @@ $$B = \begin{pmatrix} 1 & 0 \\ 1/2 & 1/2 \\ 0 & 1 \end{pmatrix}$$
 2014: Cambridge MA
 :::
 
-## The main problems
+## Main problems
 
 Given an HMM, one may want to:
 
@@ -142,8 +154,10 @@ See the tutorial by @rabinerTutorialHiddenMarkov1989
 
 ## Basics
 
+Model creation:
 ```{julia}
-using HiddenMarkovModels, Distributions
+using HiddenMarkovModels, Distributions, Random
+rng = Random.default_rng()
 
 p = [0.0, 0.0, 1.0]
 A = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]
@@ -151,10 +165,70 @@ B = [1 0; 1/2 1/2; 0 1]
 dists = Categorical.(Vector.(eachrow(B)))
 model = HMM(p, A, dists);
 ```
+Simulation:
+```{julia}
+rand(rng, model, 10)
+```
 
-# Towards generality
+## Inference
 
-## Arbitrary observations
+JuliaCon attendance data:
+```{julia}
+#| echo: false
+state_meaning(i) = if i == 1
+  return :online
+elseif i == 2
+  return :overseas
+elseif i == 3
+  return :europe
+end
+
+obs_meaning(k) = if k == 1
+  return :attending
+elseif k == 2
+  return :missing
+end;
+```
+```{julia}
+obs_seq = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1]
+obs_meaning.(obs_seq)
+```
+
+# Why a new package?
+
+## Previous state of the art
+
+- Python:
+  - [`hmmlearn`](https://github.com/hmmlearn/hmmlearn) in NumPy
+  - [`pomegranate`](https://pomegranate.readthedocs.io/) in PyTorch
+  - [`dynamax`](https://github.com/probml/dynamax) in JAX
+- Julia: [HMMBase.jl](https://github.com/maxmouchet/HMMBase.jl) 
+
+Need for generality and efficiency
+
+## Number types
+
+::: {.callout-tip}
+## Parametric number types
+
+What if I want single precision? Or arbitrary precision? Or logarithmic storage?
+:::
+
+Replace `Matrix{Float64}` with `Matrix{<:Real}`.
+
+## Matrix types
+
+::: {.callout-tip}
+## Custom 
+
+What if I want single precision? Or arbitrary precision? Or uncertainties?
+:::
+
+## Observation types
+
+## Controls
+
+## Automatic differentiationre
 
 # Appendix
 
