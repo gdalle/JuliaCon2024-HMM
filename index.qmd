@@ -10,23 +10,151 @@ author:
 date: "2024-07-12"
 bibliography: HMM.bib
 engine: julia
-format: revealjs
+format:
+  revealjs:
+    slide-number: true
+    overview: true
+    code-line-numbers: false
 execute:
     echo: true
 ---
 
 # Introduction
 
-## Dependencies
+## About me
 
-```{julia}
-using Distributions
-using HiddenMarkovModels
+- Aka `gdalle` on GitHub & Discourse
+- Postdoctoral researcher at EPFL (Switzerland)
+- Interested in machine learning and optimization
+- Member of [JuliaDiff](https://juliadiff.org/) and [JuliaGraphs](https://juliagraphs.org/)
+- Check out my website: <https://gdalle.github.io/>
+
+## What is a Hidden Markov Model?
+
+:::: {.columns}
+
+::: {.column width=70%}
+- Statistical model for a temporal process
+- Hidden state $X_t$ evolves through time
+- Observations $Y_t$ depend on the state
+- Basically a noisy Markov chain
+:::
+
+::: {.column width="30%"}
+![The first Markov chain [@vonhilgersFiveGreatestApplications2006]](./images/eugene_oneguin.png)
+:::
+
+::::
+
+## Applications
+
+- Speech processing
+- Bioinformatics
+- Predictive maintenance
+
+# The math
+
+## Some notation
+
+- $N$ possible states, $M$ possible observations
+- Initial state probabilities $p \in [0, 1]^{N}$
+- Transition matrix $A \in [0, 1]^{N \times N}$
+- Emission matrix $B \in [0, 1]^{N \times M}$
+- Parameters $\theta = (p, A, B)$
+
+$$\mathbb{P}(X_0 = i) = p_i$$
+$$\mathbb{P}(X_{t} = j | X_{t-1} = i) = A_{i,j}$$
+$$\mathbb{P}(Y_{t} = k | X_t = i) = B_{i,k}$$
+
+## Example: my JuliaCon attendance
+
+:::: {.columns}
+
+::: {.column width="45%"}
+```{mermaid}
+%%| echo: false
+stateDiagram-v2
+  direction LR
+  state "JuliaCon\nonline" as online
+  state "JuliaCon\nin Europe" as europe
+  state "JuliaCon\noverseas" as overseas
+  online --> overseas: 1/10
+  overseas --> online: 1/10
+  overseas --> europe: 2/10
+  europe --> overseas: 1/10
+  overseas --> overseas: 3/10
+  online --> online: 2/10
 ```
 
-## What is an HMM?
+$$\pi = \begin{pmatrix} 0 & 0 & 1 \end{pmatrix}$$
 
-See @rabinerTutorialHiddenMarkov1989
+$$A = \begin{pmatrix} 2/3 & 1/3 & 0 \\ 1/6 & 3/6 & 2/6 \\ 0 & 1 & 0 \end{pmatrix}$$
+:::
+
+::: {.column width="10%"}
+:::
+
+::: {.column width="45%"}
+```{mermaid}
+%%| echo: false
+stateDiagram-v2
+  state "JuliaCon\nonline" as online
+  state "JuliaCon\nin Europe" as europe
+  state "JuliaCon\noverseas" as overseas
+  state "I'm attending" as attending
+  state "I'm not attending" as missing
+  online --> attending: 3/3
+  overseas --> missing: 6/6
+  europe --> attending: 1/2
+  europe --> missing: 1/2
+```
+
+$$B = \begin{pmatrix} 1 & 0 \\ 1/2 & 1/2 \\ 0 & 1 \end{pmatrix}$$
+:::
+
+::::
+
+::: {.notes}
+2024: Eindhoven
+2023: Cambridge MA
+2022: Online
+2021: Online
+2020: Online
+2019: Baltimore MD
+2018: London
+2017: Berkeley CA
+2016: Cambridge MA
+2015: Cambridge MA
+2014: Cambridge MA
+:::
+
+## The main problems
+
+Given an HMM, one may want to:
+
+- Computing observation likelihood $\mathbb{P}_\theta(Y_{1:T})$
+- Inferring hidden state sequence $\mathbb{P}_\theta(X_{t} | Y_{1:T})$
+- Learning parameters $\max_\theta \mathbb{P}_\theta(Y_{1:T})$
+
+See the tutorial by @rabinerTutorialHiddenMarkov1989
+
+# The code
+
+## Basics
+
+```{julia}
+using HiddenMarkovModels, Distributions
+
+p = [0.0, 0.0, 1.0]
+A = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]
+B = [1 0; 1/2 1/2; 0 1]
+dists = Categorical.(Vector.(eachrow(B)))
+model = HMM(p, A, dists);
+```
+
+# Towards generality
+
+## Arbitrary observations
 
 # Appendix
 
