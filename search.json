@@ -25,35 +25,77 @@
     "href": "index.html#some-notation",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Some notation",
-    "text": "Some notation\n\n\\(N\\) possible states, \\(M\\) possible observations\nInitial state probabilities \\(p \\in [0, 1]^{N}\\)\nTransition matrix \\(A \\in [0, 1]^{N \\times N}\\)\nEmission matrix \\(B \\in [0, 1]^{N \\times M}\\)\nParameters \\(\\theta = (p, A, B)\\)\n\n\\[\\mathbb{P}(X_0 = i) = p_i\\] \\[\\mathbb{P}(X_{t} = j | X_{t-1} = i) = A_{i,j}\\] \\[\\mathbb{P}(Y_{t} = k | X_t = i) = B_{i,k}\\]"
+    "text": "Some notation\n\n\n\n\\(N\\) states, \\(M\\) observations\nInitial probabilities \\(p\\)\nTransition matrix \\(A\\)\nEmission matrix \\(B\\)\n\n\n\n\n\\[\\mathbb{P}(X_0 = i) = p_i\\] \\[\\mathbb{P}(X_{t} = j | X_{t-1} = i) = A_{i,j}\\] \\[\\mathbb{P}(Y_{t} = k | X_t = i) = B_{i,k}\\]"
   },
   {
     "objectID": "index.html#example-my-juliacon-attendance",
     "href": "index.html#example-my-juliacon-attendance",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Example: my JuliaCon attendance",
-    "text": "Example: my JuliaCon attendance\n\n\n\n\n\n\n\nstateDiagram-v2\n  direction LR\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  online --&gt; overseas: 1/10\n  overseas --&gt; online: 1/10\n  overseas --&gt; europe: 2/10\n  europe --&gt; overseas: 1/10\n  overseas --&gt; overseas: 3/10\n  online --&gt; online: 2/10\n\n\n\n\n\n\n\\[\\pi = \\begin{pmatrix} 0 & 0 & 1 \\end{pmatrix}\\]\n\\[A = \\begin{pmatrix} 2/3 & 1/3 & 0 \\\\ 1/6 & 3/6 & 2/6 \\\\ 0 & 1 & 0 \\end{pmatrix}\\]\n\n\n\n\n\n\n\n\nstateDiagram-v2\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  state \"I'm attending\" as attending\n  state \"I'm not attending\" as missing\n  online --&gt; attending: 3/3\n  overseas --&gt; missing: 6/6\n  europe --&gt; attending: 1/2\n  europe --&gt; missing: 1/2\n\n\n\n\n\n\n\\[B = \\begin{pmatrix} 1 & 0 \\\\ 1/2 & 1/2 \\\\ 0 & 1 \\end{pmatrix}\\]\n\n\n2024: Eindhoven 2023: Cambridge MA 2022: Online 2021: Online 2020: Online 2019: Baltimore MD 2018: London 2017: Berkeley CA 2016: Cambridge MA 2015: Cambridge MA 2014: Cambridge MA"
+    "text": "Example: my JuliaCon attendance\n\n\n\n\n\n\n\nstateDiagram-v2\n  direction LR\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  online --&gt; overseas: 1/10\n  overseas --&gt; online: 1/10\n  overseas --&gt; europe: 2/10\n  europe --&gt; overseas: 1/10\n  overseas --&gt; overseas: 3/10\n  online --&gt; online: 2/10\n\n\n\n\n\n\n\\[\\pi = \\begin{pmatrix} 0 & 0 & 1 \\end{pmatrix}\\]\n\\[A = \\begin{pmatrix} 2/3 & 1/3 & 0 \\\\ 1/6 & 3/6 & 2/6 \\\\ 0 & 1 & 0 \\end{pmatrix}\\]\n\n\n\n\n\n\n\n\nstateDiagram-v2\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  state \"I'm attending\" as attending\n  state \"I'm missing\" as missing\n  online --&gt; attending: 3/3\n  overseas --&gt; missing: 6/6\n  europe --&gt; attending: 1/2\n  europe --&gt; missing: 1/2\n\n\n\n\n\n\n\\[B = \\begin{pmatrix} 1 & 0 \\\\ 1/2 & 1/2 \\\\ 0 & 1 \\end{pmatrix}\\]\n\n\n2024: Eindhoven 2023: Cambridge MA 2022: Online 2021: Online 2020: Online 2019: Baltimore MD 2018: London 2017: Berkeley CA 2016: Cambridge MA 2015: Cambridge MA 2014: Cambridge MA"
   },
   {
-    "objectID": "index.html#the-main-problems",
-    "href": "index.html#the-main-problems",
+    "objectID": "index.html#main-problems",
+    "href": "index.html#main-problems",
     "title": "Fast and generic Hidden Markov Models",
-    "section": "The main problems",
-    "text": "The main problems\nGiven an HMM, one may want to:\n\nComputing observation likelihood \\(\\mathbb{P}_\\theta(Y_{1:T})\\)\nInferring hidden state sequence \\(\\mathbb{P}_\\theta(X_{t} | Y_{1:T})\\)\nLearning parameters \\(\\max_\\theta \\mathbb{P}_\\theta(Y_{1:T})\\)\n\nSee the tutorial by Rabiner (1989)"
+    "section": "Main problems",
+    "text": "Main problems\nGiven an HMM, one may want to:\n\nComputing observation likelihood \\(\\mathbb{P}_\\theta(Y_{1:T})\\)\nInferring hidden state sequence \\(\\mathbb{P}_\\theta(X_{t} | Y_{1:T})\\)\nLearning parameters \\(\\max_\\theta \\mathbb{P}_\\theta(Y_{1:T})\\)\n\nSee the tutorial by Rabiner (1989)"
   },
   {
     "objectID": "index.html#basics",
     "href": "index.html#basics",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Basics",
-    "text": "Basics\n\nusing HiddenMarkovModels, Distributions\n\np = [0.0, 0.0, 1.0]\nA = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]\nB = [1 0; 1/2 1/2; 0 1]\ndists = Categorical.(Vector.(eachrow(B)))\nmodel = HMM(p, A, dists);"
+    "text": "Basics\nModel creation:\n\nusing HiddenMarkovModels, Distributions, Random\nrng = Random.default_rng()\n\np = [0.0, 0.0, 1.0]\nA = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]\nB = [1 0; 1/2 1/2; 0 1]\ndists = Categorical.(Vector.(eachrow(B)))\nmodel = HMM(p, A, dists);\n\nSimulation:\n\nrand(rng, model, 10)\n\n(state_seq = [3, 2, 3, 2, 3, 2, 2, 2, 3, 2], obs_seq = [2, 1, 2, 1, 2, 2, 2, 2, 2, 2])"
   },
   {
-    "objectID": "index.html#arbitrary-observations",
-    "href": "index.html#arbitrary-observations",
+    "objectID": "index.html#inference",
+    "href": "index.html#inference",
     "title": "Fast and generic Hidden Markov Models",
-    "section": "Arbitrary observations",
-    "text": "Arbitrary observations"
+    "section": "Inference",
+    "text": "Inference\nJuliaCon attendance data:\n\nobs_seq = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1]\nobs_meaning.(obs_seq)\n\n11-element Vector{Symbol}:\n :missing\n :missing\n :missing\n :missing\n :missing\n :missing\n :attending\n :attending\n :attending\n :missing\n :attending"
+  },
+  {
+    "objectID": "index.html#previous-state-of-the-art",
+    "href": "index.html#previous-state-of-the-art",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Previous state of the art",
+    "text": "Previous state of the art\n\nPython:\n\nhmmlearn in NumPy\npomegranate in PyTorch\ndynamax in JAX\n\nJulia: HMMBase.jl\n\nNeed for generality and efficiency"
+  },
+  {
+    "objectID": "index.html#number-types",
+    "href": "index.html#number-types",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Number types",
+    "text": "Number types\n\n\n\n\n\n\nParametric number types\n\n\nWhat if I want single precision? Or arbitrary precision? Or logarithmic storage?\n\n\n\nReplace Matrix{Float64} with Matrix{&lt;:Real}."
+  },
+  {
+    "objectID": "index.html#matrix-types",
+    "href": "index.html#matrix-types",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Matrix types",
+    "text": "Matrix types\n\n\n\n\n\n\nCustom\n\n\nWhat if I want single precision? Or arbitrary precision? Or uncertainties?"
+  },
+  {
+    "objectID": "index.html#observation-types",
+    "href": "index.html#observation-types",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Observation types",
+    "text": "Observation types"
+  },
+  {
+    "objectID": "index.html#controls",
+    "href": "index.html#controls",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Controls",
+    "text": "Controls"
+  },
+  {
+    "objectID": "index.html#automatic-differentiationre",
+    "href": "index.html#automatic-differentiationre",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Automatic differentiationre",
+    "text": "Automatic differentiationre"
   },
   {
     "objectID": "index.html#references",

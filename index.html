@@ -454,7 +454,7 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <section id="what-is-a-hidden-markov-model" class="slide level2">
 <h2>What is a Hidden Markov Model?</h2>
 <div class="columns">
-<div class="column" style="width:70%;">
+<div class="column" style="width:65%;">
 <ul>
 <li>Statistical model for a temporal process</li>
 <li>Hidden state <span class="math inline">\(X_t\)</span> evolves through time</li>
@@ -464,7 +464,7 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 </div><div class="column" style="width:30%;">
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><img data-src="./images/eugene_oneguin.png"></p>
+<p><img data-src="./images/eugene_oneguin.png" height="400"></p>
 <figcaption>The first Markov chain <span class="citation" data-cites="vonhilgersFiveGreatestApplications2006">(<a href="#/references" role="doc-biblioref" onclick="">Von Hilgers and Langville 2006</a>)</span></figcaption>
 </figure>
 </div>
@@ -485,14 +485,19 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 </section>
 <section id="some-notation" class="slide level2">
 <h2>Some notation</h2>
+<div class="columns">
+<div class="column" style="width:45%;">
 <ul>
-<li><span class="math inline">\(N\)</span> possible states, <span class="math inline">\(M\)</span> possible observations</li>
-<li>Initial state probabilities <span class="math inline">\(p \in [0, 1]^{N}\)</span></li>
-<li>Transition matrix <span class="math inline">\(A \in [0, 1]^{N \times N}\)</span></li>
-<li>Emission matrix <span class="math inline">\(B \in [0, 1]^{N \times M}\)</span></li>
-<li>Parameters <span class="math inline">\(\theta = (p, A, B)\)</span></li>
+<li><span class="math inline">\(N\)</span> states, <span class="math inline">\(M\)</span> observations</li>
+<li>Initial probabilities <span class="math inline">\(p\)</span></li>
+<li>Transition matrix <span class="math inline">\(A\)</span></li>
+<li>Emission matrix <span class="math inline">\(B\)</span></li>
 </ul>
+</div><div class="column" style="width:5%;">
+
+</div><div class="column" style="width:50%;">
 <p><span class="math display">\[\mathbb{P}(X_0 = i) = p_i\]</span> <span class="math display">\[\mathbb{P}(X_{t} = j | X_{t-1} = i) = A_{i,j}\]</span> <span class="math display">\[\mathbb{P}(Y_{t} = k | X_t = i) = B_{i,k}\]</span></p>
+</div></div>
 </section>
 <section id="example-my-juliacon-attendance" class="slide level2">
 <h2>Example: my JuliaCon attendance</h2>
@@ -522,7 +527,7 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 </div>
 <p><span class="math display">\[\pi = \begin{pmatrix} 0 &amp; 0 &amp; 1 \end{pmatrix}\]</span></p>
 <p><span class="math display">\[A = \begin{pmatrix} 2/3 &amp; 1/3 &amp; 0 \\ 1/6 &amp; 3/6 &amp; 2/6 \\ 0 &amp; 1 &amp; 0 \end{pmatrix}\]</span></p>
-</div><div class="column" style="width:10%;">
+</div><div class="column" style="width:5%;">
 
 </div><div class="column" style="width:45%;">
 <div class="cell" data-reveal="true" data-layout-align="default">
@@ -535,7 +540,7 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
   state "JuliaCon\nin Europe" as europe
   state "JuliaCon\noverseas" as overseas
   state "I'm attending" as attending
-  state "I'm not attending" as missing
+  state "I'm missing" as missing
   online --&gt; attending: 3/3
   overseas --&gt; missing: 6/6
   europe --&gt; attending: 1/2
@@ -562,8 +567,8 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
           display:block!important;
       }</style></aside>
 </section>
-<section id="the-main-problems" class="slide level2">
-<h2>The main problems</h2>
+<section id="main-problems" class="slide level2">
+<h2>Main problems</h2>
 <p>Given an HMM, one may want to:</p>
 <ul>
 <li>Computing observation likelihood <span class="math inline">\(\mathbb{P}_\theta(Y_{1:T})\)</span></li>
@@ -579,23 +584,106 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 </section>
 <section id="basics" class="slide level2">
 <h2>Basics</h2>
+<p>Model creation:</p>
 <div id="2" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">HiddenMarkovModels</span>, <span class="bu">Distributions</span></span>
-<span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> [<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]</span>
-<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="fl">2</span><span class="op">/</span><span class="fl">3</span> <span class="fl">1</span><span class="op">/</span><span class="fl">3</span> <span class="fl">0</span>; <span class="fl">1</span><span class="op">/</span><span class="fl">6</span> <span class="fl">3</span><span class="op">/</span><span class="fl">6</span> <span class="fl">2</span><span class="op">/</span><span class="fl">6</span>; <span class="fl">0</span> <span class="fl">1</span> <span class="fl">0</span>]</span>
-<span id="cb1-5"><a aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> [<span class="fl">1</span> <span class="fl">0</span>; <span class="fl">1</span><span class="op">/</span><span class="fl">2</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span>; <span class="fl">0</span> <span class="fl">1</span>]</span>
-<span id="cb1-6"><a aria-hidden="true" tabindex="-1"></a>dists <span class="op">=</span> <span class="fu">Categorical</span>.(<span class="fu">Vector</span>.(<span class="fu">eachrow</span>(B)))</span>
-<span id="cb1-7"><a aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> <span class="fu">HMM</span>(p, A, dists);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">HiddenMarkovModels</span>, <span class="bu">Distributions</span>, <span class="bu">Random</span></span>
+<span id="cb1-2"><a aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> <span class="bu">Random</span>.<span class="fu">default_rng</span>()</span>
+<span id="cb1-3"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> [<span class="fl">0.0</span>, <span class="fl">0.0</span>, <span class="fl">1.0</span>]</span>
+<span id="cb1-5"><a aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [<span class="fl">2</span><span class="op">/</span><span class="fl">3</span> <span class="fl">1</span><span class="op">/</span><span class="fl">3</span> <span class="fl">0</span>; <span class="fl">1</span><span class="op">/</span><span class="fl">6</span> <span class="fl">3</span><span class="op">/</span><span class="fl">6</span> <span class="fl">2</span><span class="op">/</span><span class="fl">6</span>; <span class="fl">0</span> <span class="fl">1</span> <span class="fl">0</span>]</span>
+<span id="cb1-6"><a aria-hidden="true" tabindex="-1"></a>B <span class="op">=</span> [<span class="fl">1</span> <span class="fl">0</span>; <span class="fl">1</span><span class="op">/</span><span class="fl">2</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span>; <span class="fl">0</span> <span class="fl">1</span>]</span>
+<span id="cb1-7"><a aria-hidden="true" tabindex="-1"></a>dists <span class="op">=</span> <span class="fu">Categorical</span>.(<span class="fu">Vector</span>.(<span class="fu">eachrow</span>(B)))</span>
+<span id="cb1-8"><a aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> <span class="fu">HMM</span>(p, A, dists);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Simulation:</p>
+<div id="4" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">rand</span>(rng, model, <span class="fl">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(state_seq = [3, 2, 3, 2, 3, 2, 2, 2, 3, 2], obs_seq = [2, 1, 2, 1, 2, 2, 2, 2, 2, 2])</code></pre>
+</div>
+</div>
+</section>
+<section id="inference" class="slide level2">
+<h2>Inference</h2>
+<p>JuliaCon attendance data:</p>
+<div id="8" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a>obs_seq <span class="op">=</span> [<span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">1</span>]</span>
+<span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">obs_meaning</span>.(obs_seq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>11-element Vector{Symbol}:
+ :missing
+ :missing
+ :missing
+ :missing
+ :missing
+ :missing
+ :attending
+ :attending
+ :attending
+ :missing
+ :attending</code></pre>
+</div>
 </div>
 </section></section>
 <section>
-<section id="towards-generality" class="title-slide slide level1 center">
-<h1>Towards generality</h1>
+<section id="why-a-new-package" class="title-slide slide level1 center">
+<h1>Why a new package?</h1>
 
 </section>
-<section id="arbitrary-observations" class="slide level2">
-<h2>Arbitrary observations</h2>
+<section id="previous-state-of-the-art" class="slide level2">
+<h2>Previous state of the art</h2>
+<ul>
+<li>Python:
+<ul>
+<li><a href="https://github.com/hmmlearn/hmmlearn"><code>hmmlearn</code></a> in NumPy</li>
+<li><a href="https://pomegranate.readthedocs.io/"><code>pomegranate</code></a> in PyTorch</li>
+<li><a href="https://github.com/probml/dynamax"><code>dynamax</code></a> in JAX</li>
+</ul></li>
+<li>Julia: <a href="https://github.com/maxmouchet/HMMBase.jl">HMMBase.jl</a></li>
+</ul>
+<p>Need for generality and efficiency</p>
+</section>
+<section id="number-types" class="slide level2">
+<h2>Number types</h2>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Parametric number types</strong></p>
+</div>
+<div class="callout-content">
+<p>What if I want single precision? Or arbitrary precision? Or logarithmic storage?</p>
+</div>
+</div>
+</div>
+<p>Replace <code>Matrix{Float64}</code> with <code>Matrix{&lt;:Real}</code>.</p>
+</section>
+<section id="matrix-types" class="slide level2">
+<h2>Matrix types</h2>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Custom</strong></p>
+</div>
+<div class="callout-content">
+<p>What if I want single precision? Or arbitrary precision? Or uncertainties?</p>
+</div>
+</div>
+</div>
+</section>
+<section id="observation-types" class="slide level2">
+<h2>Observation types</h2>
+</section>
+<section id="controls" class="slide level2">
+<h2>Controls</h2>
+</section>
+<section id="automatic-differentiationre" class="slide level2">
+<h2>Automatic differentiationre</h2>
 </section></section>
 <section>
 <section id="appendix" class="title-slide slide level1 center">
@@ -795,9 +883,9 @@ Von Hilgers, Philipp, and Amy N. Langville. 2006. <span>“The Five Greatest App
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1050,
+        width: 1280,
 
-        height: 700,
+        height: 720,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,
