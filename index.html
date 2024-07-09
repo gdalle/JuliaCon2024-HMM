@@ -8,7 +8,7 @@
 <link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
-  <meta name="generator" content="quarto-1.5.53">
+  <meta name="generator" content="quarto-1.5.54">
 
   <meta name="author" content="Guillaume Dalle">
   <meta name="dcterms.date" content="2024-07-12">
@@ -330,6 +330,7 @@
     }
     .reveal .slide:not(.center) {
       height: 100%;
+      overflow-y: auto;
     }
     .reveal .slide.scrollable {
       overflow-y: auto;
@@ -444,11 +445,11 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <section id="about-me" class="slide level2">
 <h2>About me</h2>
 <ul>
-<li>Aka <code>gdalle</code> on GitHub &amp; Discourse</li>
+<li>Aka <a href="https://github.com/gdalle"><code>gdalle</code></a> on GitHub &amp; Discourse</li>
 <li>Postdoctoral researcher at EPFL (Switzerland)</li>
-<li>Interested in machine learning and optimization</li>
-<li>Member of <a href="https://juliadiff.org/">JuliaDiff</a> and <a href="https://juliagraphs.org/">JuliaGraphs</a></li>
+<li>Interested in machine learning (<a href="https://juliadiff.org/">JuliaDiff</a>) and optimization (<a href="https://juliagraphs.org/">JuliaGraphs</a>)</li>
 <li>Check out my website: <a href="https://gdalle.github.io/" class="uri">https://gdalle.github.io/</a></li>
+<li>Other talk: <a href="https://pretalx.com/juliacon2024/talk/YGZYWK/"><em>Gradients for everyone: a quick guide to autodiff in Julia</em></a></li>
 </ul>
 </section>
 <section id="what-is-a-hidden-markov-model" class="slide level2">
@@ -513,19 +514,19 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
   state "JuliaCon\nonline" as online
   state "JuliaCon\nin Europe" as europe
   state "JuliaCon\noverseas" as overseas
-  online --&gt; overseas: 1/10
-  overseas --&gt; online: 1/10
-  overseas --&gt; europe: 2/10
-  europe --&gt; overseas: 1/10
-  overseas --&gt; overseas: 3/10
-  online --&gt; online: 2/10
+  online --&gt; overseas: 1
+  overseas --&gt; online: 1
+  overseas --&gt; europe: 2
+  europe --&gt; overseas: 1
+  overseas --&gt; overseas: 3
+  online --&gt; online: 2
 </pre>
 </div>
 <p></p></figure><p></p>
 </div>
 </div>
 </div>
-<p><span class="math display">\[\pi = \begin{pmatrix} 0 &amp; 0 &amp; 1 \end{pmatrix}\]</span></p>
+<p><span class="math display">\[p = \begin{pmatrix} 0 &amp; 0 &amp; 1 \end{pmatrix}\]</span></p>
 <p><span class="math display">\[A = \begin{pmatrix} 2/3 &amp; 1/3 &amp; 0 \\ 1/6 &amp; 3/6 &amp; 2/6 \\ 0 &amp; 1 &amp; 0 \end{pmatrix}\]</span></p>
 </div><div class="column" style="width:5%;">
 
@@ -541,10 +542,10 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
   state "JuliaCon\noverseas" as overseas
   state "I'm attending" as attending
   state "I'm missing" as missing
-  online --&gt; attending: 3/3
-  overseas --&gt; missing: 6/6
-  europe --&gt; attending: 1/2
-  europe --&gt; missing: 1/2
+  online --&gt; attending: 3
+  overseas --&gt; missing: 6
+  europe --&gt; attending: 1
+  europe --&gt; missing: 1
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -567,15 +568,15 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
           display:block!important;
       }</style></aside>
 </section>
-<section id="main-problems" class="slide level2">
-<h2>Main problems</h2>
+<section id="main-algorithms" class="slide level2">
+<h2>Main algorithms</h2>
 <p>Given an HMM, one may want to:</p>
 <ul>
-<li>Computing observation likelihood <span class="math inline">\(\mathbb{P}_\theta(Y_{1:T})\)</span></li>
-<li>Inferring hidden state sequence <span class="math inline">\(\mathbb{P}_\theta(X_{t} | Y_{1:T})\)</span></li>
-<li>Learning parameters <span class="math inline">\(\max_\theta \mathbb{P}_\theta(Y_{1:T})\)</span></li>
+<li>Observation likelihood <span class="math inline">\(\mathbb{P}_\theta(Y_{1:T})\)</span> <span class="math inline">\(\implies\)</span> Forward</li>
+<li>Most likely states <span class="math inline">\(\underset{X_{1:T}}{\max} \mathbb{P}_\theta(X_{1:T} | Y_{1:T})\)</span> <span class="math inline">\(\implies\)</span> Viterbi</li>
+<li>Best parameters <span class="math inline">\(\underset{\theta}{\max} \mathbb{P}_\theta(Y_{1:T})\)</span> <span class="math inline">\(\implies\)</span> Baum-Welch</li>
 </ul>
-<p>See the tutorial by <span class="citation" data-cites="rabinerTutorialHiddenMarkov1989">Rabiner (<a href="#/references" role="doc-biblioref" onclick="">1989</a>)</span></p>
+<p>See the tutorial by <span class="citation" data-cites="rabinerTutorialHiddenMarkov1989">Rabiner (<a href="#/references" role="doc-biblioref" onclick="">1989</a>)</span> for details.</p>
 </section></section>
 <section>
 <section id="the-code" class="title-slide slide level1 center">
@@ -597,9 +598,9 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 </div>
 <p>Simulation:</p>
 <div id="4" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">rand</span>(rng, model, <span class="fl">10</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">rand</span>(rng, model, <span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>(state_seq = [3, 2, 3, 2, 3, 2, 2, 2, 3, 2], obs_seq = [2, 1, 2, 1, 2, 2, 2, 2, 2, 2])</code></pre>
+<pre><code>(state_seq = [3, 2, 1, 2, 2], obs_seq = [2, 2, 1, 2, 2])</code></pre>
 </div>
 </div>
 </section>
@@ -607,92 +608,424 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <h2>Inference</h2>
 <p>JuliaCon attendance data:</p>
 <div id="8" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a>obs_seq <span class="op">=</span> [<span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">1</span>]</span>
-<span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">obs_meaning</span>.(obs_seq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb4-1"><a aria-hidden="true" tabindex="-1"></a>state_seq <span class="op">=</span> [<span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>]</span>
+<span id="cb4-2"><a aria-hidden="true" tabindex="-1"></a>obs_seq <span class="op">=</span> [<span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">1</span>];</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Likelihood:</p>
+<div id="10" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb5-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">logdensityof</span>(model, obs_seq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>11-element Vector{Symbol}:
- :missing
- :missing
- :missing
- :missing
- :missing
- :missing
- :attending
- :attending
- :attending
- :missing
- :attending</code></pre>
+<pre><code>-6.954935049252169</code></pre>
 </div>
 </div>
+<p>State sequence:</p>
+<div id="12" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a aria-hidden="true" tabindex="-1"></a>best_state_seq, _ <span class="op">=</span> <span class="fu">viterbi</span>(model, obs_seq)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>([3, 2, 3, 2, 3, 2, 1, 1, 1, 2, 2], [-10.057409634808385])</code></pre>
+</div>
+</div>
+</section>
+<section id="learning" class="slide level2">
+<h2>Learning</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div id="16" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a aria-hidden="true" tabindex="-1"></a>long_obs_seq <span class="op">=</span> <span class="fu">rand</span>(rng, model, <span class="fl">1000</span>).obs_seq</span>
+<span id="cb9-2"><a aria-hidden="true" tabindex="-1"></a>p0, A0 <span class="op">=</span> <span class="fu">rand_prob_vec</span>(<span class="fl">3</span>), <span class="fu">rand_trans_mat</span>(<span class="fl">3</span>)</span>
+<span id="cb9-3"><a aria-hidden="true" tabindex="-1"></a>model_init <span class="op">=</span> <span class="fu">HMM</span>(p0, A0, dists)</span>
+<span id="cb9-4"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a aria-hidden="true" tabindex="-1"></a>model_est, logL <span class="op">=</span> <span class="fu">baum_welch</span>(</span>
+<span id="cb9-6"><a aria-hidden="true" tabindex="-1"></a>  model, long_obs_seq);</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="18" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">transition_matrix</span>(model_est)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>3×3 Matrix{Float64}:
+ 0.667016  0.332984  0.0
+ 0.135861  0.493897  0.370242
+ 0.0       1.0       0.0</code></pre>
+</div>
+</div>
+<div id="20" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb12-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">probs</span>.(<span class="fu">obs_distributions</span>(model_est))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>3-element Vector{Vector{Float64}}:
+ [1.0, 0.0]
+ [0.5407415572021683, 0.45925844279783157]
+ [0.0, 0.9999999999999999]</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<div id="22" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+<figure>
+<p><img data-src="index_files/figure-revealjs/cell-12-output-1.svg"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="why-a-new-package" class="slide level2">
+<h2>Why a new package?</h2>
+<ul>
+<li>Python: <a href="https://github.com/hmmlearn/hmmlearn"><code>hmmlearn</code></a>, <a href="https://pomegranate.readthedocs.io/"><code>pomegranate</code></a>, <a href="https://github.com/probml/dynamax"><code>dynamax</code></a></li>
+<li>Julia: <a href="https://github.com/maxmouchet/HMMBase.jl">HMMBase.jl</a>, based on <a href="https://github.com/JuliaStats/Distributions.jl">Distributions.jl</a></li>
+</ul>
+<p>Need for a generic, fast and reliable library.</p>
 </section></section>
 <section>
-<section id="why-a-new-package" class="title-slide slide level1 center">
-<h1>Why a new package?</h1>
+<section id="more-generality" class="title-slide slide level1 center">
+<h1>More generality</h1>
 
-</section>
-<section id="previous-state-of-the-art" class="slide level2">
-<h2>Previous state of the art</h2>
-<ul>
-<li>Python:
-<ul>
-<li><a href="https://github.com/hmmlearn/hmmlearn"><code>hmmlearn</code></a> in NumPy</li>
-<li><a href="https://pomegranate.readthedocs.io/"><code>pomegranate</code></a> in PyTorch</li>
-<li><a href="https://github.com/probml/dynamax"><code>dynamax</code></a> in JAX</li>
-</ul></li>
-<li>Julia: <a href="https://github.com/maxmouchet/HMMBase.jl">HMMBase.jl</a></li>
-</ul>
-<p>Need for generality and efficiency</p>
 </section>
 <section id="number-types" class="slide level2">
 <h2>Number types</h2>
+<ul>
+<li><del>I need <code>Float64</code> everywhere or I get really stressed out</del></li>
+<li>I can handle any real number they throw at me</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="24" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb14-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">ForwardDiff</span></span>
+<span id="cb14-2"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(μ) <span class="op">=</span> <span class="fu">logdensityof</span>(</span>
+<span id="cb14-4"><a aria-hidden="true" tabindex="-1"></a>  <span class="fu">HMM</span>(</span>
+<span id="cb14-5"><a aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.9</span>, <span class="fl">0.1</span>], [<span class="fl">0.7</span> <span class="fl">0.3</span>; <span class="fl">0.2</span> <span class="fl">0.8</span>],</span>
+<span id="cb14-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="fu">Normal</span>.(μ, <span class="fu">ones</span>(<span class="fl">2</span>))</span>
+<span id="cb14-7"><a aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb14-8"><a aria-hidden="true" tabindex="-1"></a>  [<span class="op">-</span><span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.3</span>, <span class="op">-</span><span class="fl">0.6</span>, <span class="fl">1.4</span>, <span class="fl">1.2</span>, <span class="fl">0.9</span>]</span>
+<span id="cb14-9"><a aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb14-10"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a aria-hidden="true" tabindex="-1"></a>ForwardDiff.<span class="fu">gradient</span>(f, [<span class="op">-</span><span class="fl">2.0</span>, <span class="fl">2.0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>2-element Vector{Float64}:
+  2.9993145840880095
+ -2.7406261032012837</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Parametric number types</strong></p>
+<p><strong>Benefits</strong></p>
 </div>
 <div class="callout-content">
-<p>What if I want single precision? Or arbitrary precision? Or logarithmic storage?</p>
+<p>Variable precision, automatic differentiation, logarithmic storage.</p>
 </div>
 </div>
 </div>
-<p>Replace <code>Matrix{Float64}</code> with <code>Matrix{&lt;:Real}</code>.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Challenges</strong></p>
+</div>
+<div class="callout-content">
+<p>Parametric types everywhere, handling promotion correctly.</p>
+</div>
+</div>
+</div>
+</div></div>
 </section>
 <section id="matrix-types" class="slide level2">
 <h2>Matrix types</h2>
+<ul>
+<li><del>The only good matrix is a dense <code>Matrix</code></del></li>
+<li>Who’s afraid of the big bad <code>SparseMatrixCSC</code>?</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="26" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb16-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">using</span> <span class="bu">SparseArrays</span></span>
+<span id="cb16-2"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a aria-hidden="true" tabindex="-1"></a>model_sp <span class="op">=</span> <span class="fu">HMM</span>(p, <span class="fu">sparse</span>(A), dists)</span>
+<span id="cb16-4"><a aria-hidden="true" tabindex="-1"></a>model_sp_est, _ <span class="op">=</span> <span class="fu">baum_welch</span>(</span>
+<span id="cb16-5"><a aria-hidden="true" tabindex="-1"></a>  model_sp, long_obs_seq</span>
+<span id="cb16-6"><a aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-7"><a aria-hidden="true" tabindex="-1"></a><span class="fu">transition_matrix</span>(model_sp_est)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>3×3 SparseMatrixCSC{Float64, Int64} with 6 stored entries:
+ 0.667016  0.332984   ⋅ 
+ 0.135861  0.493897  0.370242
+  ⋅        1.0        ⋅ </code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Custom</strong></p>
+<p><strong>Benefits</strong></p>
 </div>
 <div class="callout-content">
-<p>What if I want single precision? Or arbitrary precision? Or uncertainties?</p>
+<p>Large state spaces, realistic transition structures.</p>
 </div>
 </div>
 </div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Challenges</strong></p>
+</div>
+<div class="callout-content">
+<p>Generic updates during parameter estimation.</p>
+</div>
+</div>
+</div>
+</div></div>
 </section>
 <section id="observation-types" class="slide level2">
 <h2>Observation types</h2>
+<ul>
+<li><del>Distributions.jl is my whole life</del></li>
+<li>Give me a sampler + loglikelihood and let’s go</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="28" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> MyDist</span>
+<span id="cb18-2"><a aria-hidden="true" tabindex="-1"></a>  length<span class="op">::</span><span class="dt">Int</span></span>
+<span id="cb18-3"><a aria-hidden="true" tabindex="-1"></a><span class="kw">end</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="32" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb19-1"><a aria-hidden="true" tabindex="-1"></a><span class="bu">Base</span>.<span class="fu">rand</span>(</span>
+<span id="cb19-2"><a aria-hidden="true" tabindex="-1"></a>  rng<span class="op">::</span><span class="dt">AbstractRNG</span>, dist<span class="op">::</span><span class="dt">MyDist</span></span>
+<span id="cb19-3"><a aria-hidden="true" tabindex="-1"></a>) <span class="op">=</span> <span class="fu">randstring</span>(rng, dist.length)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="34" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a aria-hidden="true" tabindex="-1"></a>model_str <span class="op">=</span> <span class="fu">HMM</span>(p, A, <span class="fu">MyDist</span>.(<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>))</span>
+<span id="cb20-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">rand</span>(rng, model_str, <span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>(state_seq = [3, 2, 3, 2, 1], obs_seq = ["78Q", "Sx", "vmd", "4n", "C"])</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Benefits</strong></p>
+</div>
+<div class="callout-content">
+<p>Arbitrary observations (strings, point processes, images).</p>
+</div>
+</div>
+</div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Challenges</strong></p>
+</div>
+<div class="callout-content">
+<p>What is the correct interface for these distributions?</p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="automatic-differentiation" class="slide level2">
+<h2>Automatic differentiation</h2>
+<ul>
+<li><del>There are mutations, Zygote.jl will never survive</del></li>
+<li>My middle initial is C for ChainRules.jl</li>
+</ul>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div id="36" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb22-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">Zygote</span></span>
+<span id="cb22-2"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a aria-hidden="true" tabindex="-1"></a><span class="fu">f</span>(μ) <span class="op">=</span> <span class="fu">logdensityof</span>(</span>
+<span id="cb22-4"><a aria-hidden="true" tabindex="-1"></a>  <span class="fu">HMM</span>(</span>
+<span id="cb22-5"><a aria-hidden="true" tabindex="-1"></a>    [<span class="fl">0.9</span>, <span class="fl">0.1</span>], [<span class="fl">0.7</span> <span class="fl">0.3</span>; <span class="fl">0.2</span> <span class="fl">0.8</span>],</span>
+<span id="cb22-6"><a aria-hidden="true" tabindex="-1"></a>    <span class="fu">Normal</span>.(μ, <span class="fu">ones</span>(<span class="fl">2</span>))</span>
+<span id="cb22-7"><a aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb22-8"><a aria-hidden="true" tabindex="-1"></a>  [<span class="op">-</span><span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.3</span>, <span class="op">-</span><span class="fl">0.6</span>, <span class="fl">1.4</span>, <span class="fl">1.2</span>, <span class="fl">0.9</span>]</span>
+<span id="cb22-9"><a aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb22-10"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-11"><a aria-hidden="true" tabindex="-1"></a>Zygote.<span class="fu">gradient</span>(f, [<span class="op">-</span><span class="fl">2.0</span>, <span class="fl">2.0</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<pre><code>([2.999314584088009, -2.740626103201284],)</code></pre>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Benefits</strong></p>
+</div>
+<div class="callout-content">
+<p>Efficient gradient computations.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Challenges</strong></p>
+</div>
+<div class="callout-content">
+<p>Writing down the math.</p>
+</div>
+</div>
+</div>
+</div></div>
 </section>
 <section id="controls" class="slide level2">
 <h2>Controls</h2>
-</section>
-<section id="automatic-differentiationre" class="slide level2">
-<h2>Automatic differentiationre</h2>
+<ul>
+<li><del>My HMM never changes, it’s my rock</del></li>
+<li>Bring in the exogenous variables!</li>
+</ul>
+<div id="38" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb24-1"><a aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="bu">HiddenMarkovModels</span> as HMMs</span>
+<span id="cb24-2"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> Dirac; val; <span class="kw">end</span></span>
+<span id="cb24-4"><a aria-hidden="true" tabindex="-1"></a><span class="kw">struct</span> DiracHMM <span class="op">&lt;:</span><span class="dt"> AbstractHMM</span>; N<span class="op">::</span><span class="dt">Int</span>; <span class="kw">end</span></span>
+<span id="cb24-5"><a aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a aria-hidden="true" tabindex="-1"></a>HMMs.<span class="fu">initialization</span>(model<span class="op">::</span><span class="dt">DiracHMM</span>) <span class="op">=</span> <span class="fu">ones</span>(model.N) <span class="op">/</span> model.N</span>
+<span id="cb24-7"><a aria-hidden="true" tabindex="-1"></a>HMMs.<span class="fu">transition_matrix</span>(model<span class="op">::</span><span class="dt">DiracHMM</span>, control) <span class="op">=</span> <span class="fu">ones</span>(model.N, model.N) <span class="op">/</span> model.N</span>
+<span id="cb24-8"><a aria-hidden="true" tabindex="-1"></a>HMMs.<span class="fu">obs_distributions</span>(<span class="op">::</span><span class="dt">DiracHMM</span>, control) <span class="op">=</span> <span class="fu">Dirac</span>(control)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Benefits</strong></p>
+</div>
+<div class="callout-content">
+<p>Temporal heterogeneity can be modeled.</p>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Challenges</strong></p>
+</div>
+<div class="callout-content">
+<p>More complicated estimation methods.</p>
+</div>
+</div>
+</div>
+</div></div>
 </section></section>
 <section>
-<section id="appendix" class="title-slide slide level1 center">
-<h1>Appendix</h1>
+<section id="more-speed" class="title-slide slide level1 center">
+<h1>More speed</h1>
 
+</section>
+<section id="type-stability" class="slide level2">
+<h2>Type stability</h2>
+<ul>
+<li>Essential for Just-In-Time compilation to work well</li>
+<li>Tested with <a href="https://github.com/aviatesk/JET.jl">JET.jl</a> for all major subroutines</li>
+</ul>
+</section>
+<section id="no-allocations" class="slide level2">
+<h2>No allocations</h2>
+<ul>
+<li>Crucial for performance in hot loops</li>
+<li>Tested with <code>@allocated</code> for all major subroutines</li>
+</ul>
+</section>
+<section id="multithreading" class="slide level2">
+<h2>Multithreading</h2>
+<ul>
+<li>Inference and estimation on multiple sequences are embarrassingly parallel</li>
+<li>Implemented with <code>Threads.@threads</code>, potential for multithreaded reductions too</li>
+</ul>
+</section></section>
+<section>
+<section id="more-reliability" class="title-slide slide level1 center">
+<h1>More reliability</h1>
+
+</section>
+<section id="good-practices-in-package-development" class="slide level2">
+<h2>Good practices in package development</h2>
+<ul>
+<li>Unit tests</li>
+<li>Documentation with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a></li>
+<li>Tutorials with <a href="https://github.com/JuliaDocs/Documenter.jl">Literate.jl</a></li>
+</ul>
+</section>
+<section id="some-encouraging-benchmarks" class="slide level2">
+<h2>Some encouraging benchmarks</h2>
+
+<img data-src="images/benchmark.svg" class="r-stretch quarto-figure-center"><p class="caption">Comparison against Python and Julia competitors</p></section></section>
+<section>
+<section id="conclusion" class="title-slide slide level1 center">
+<h1>Conclusion</h1>
+
+</section>
+<section id="the-role-of-interfaces" class="slide level2">
+<h2>The role of interfaces</h2>
+<ul>
+<li><code>AbstractArray</code> for transition matrices</li>
+<li><a href="https://github.com/JuliaMath/DensityInterface.jl">DensityInterface.jl</a> for observation distributions</li>
+<li><a href="https://gdalle.github.io/HiddenMarkovModels.jl/stable/api/#HiddenMarkovModels.AbstractHMM"><code>AbstractHMM</code></a> with a handful of functions to handle simulation, inference and learning</li>
+</ul>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Formal specification</strong></p>
+</div>
+<div class="callout-content">
+<p>For interfaces with precise requirements, “the doc is the API” cannot suffice.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="publishing-software" class="slide level2">
+<h2>Publishing software</h2>
+<ul>
+<li>Paper in the Journal of Open Source Software <span class="citation" data-cites="dalleHiddenMarkovModelsJlGeneric2024">(<a href="#/references" role="doc-biblioref" onclick="">Dalle 2024</a>)</span></li>
+<li>Pleasant and productive open review process</li>
+<li>Packages are valuable research contributions</li>
+<li>They need to be cited and recognized</li>
+</ul>
 </section>
 <section id="references" class="slide level2 smaller scrollable">
 <h2>References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-dalleHiddenMarkovModelsJlGeneric2024" class="csl-entry" role="listitem">
+Dalle, Guillaume. 2024. <span>“<span>HiddenMarkovModels</span>.jl: Generic, Fast and Reliable State Space Modeling.”</span> <em>Journal of Open Source Software</em> 9 (96): 6436. <a href="https://doi.org/10.21105/joss.06436">https://doi.org/10.21105/joss.06436</a>.
+</div>
 <div id="ref-rabinerTutorialHiddenMarkov1989" class="csl-entry" role="listitem">
 Rabiner, L. R. 1989. <span>“A Tutorial on Hidden <span>Markov</span> Models and Selected Applications in Speech Recognition.”</span> <em>Proceedings of the IEEE</em> 77 (2): 257–86. <a href="https://doi.org/cswph2">https://doi.org/cswph2</a>.
 </div>
@@ -883,9 +1216,9 @@ Von Hilgers, Philipp, and Amy N. Langville. 2006. <span>“The Five Greatest App
         // The "normal" size of the presentation, aspect ratio will be preserved
         // when the presentation is scaled to fit different resolutions. Can be
         // specified using percentage units.
-        width: 1280,
+        width: 1050,
 
-        height: 720,
+        height: 700,
 
         // Factor of the display size that should remain empty around the content
         margin: 0.1,

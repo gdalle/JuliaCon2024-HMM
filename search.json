@@ -4,7 +4,7 @@
     "href": "index.html#about-me",
     "title": "Fast and generic Hidden Markov Models",
     "section": "About me",
-    "text": "About me\n\nAka gdalle on GitHub & Discourse\nPostdoctoral researcher at EPFL (Switzerland)\nInterested in machine learning and optimization\nMember of JuliaDiff and JuliaGraphs\nCheck out my website: https://gdalle.github.io/"
+    "text": "About me\n\nAka gdalle on GitHub & Discourse\nPostdoctoral researcher at EPFL (Switzerland)\nInterested in machine learning (JuliaDiff) and optimization (JuliaGraphs)\nCheck out my website: https://gdalle.github.io/\nOther talk: Gradients for everyone: a quick guide to autodiff in Julia"
   },
   {
     "objectID": "index.html#what-is-a-hidden-markov-model",
@@ -32,76 +32,132 @@
     "href": "index.html#example-my-juliacon-attendance",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Example: my JuliaCon attendance",
-    "text": "Example: my JuliaCon attendance\n\n\n\n\n\n\n\nstateDiagram-v2\n  direction LR\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  online --&gt; overseas: 1/10\n  overseas --&gt; online: 1/10\n  overseas --&gt; europe: 2/10\n  europe --&gt; overseas: 1/10\n  overseas --&gt; overseas: 3/10\n  online --&gt; online: 2/10\n\n\n\n\n\n\n\\[\\pi = \\begin{pmatrix} 0 & 0 & 1 \\end{pmatrix}\\]\n\\[A = \\begin{pmatrix} 2/3 & 1/3 & 0 \\\\ 1/6 & 3/6 & 2/6 \\\\ 0 & 1 & 0 \\end{pmatrix}\\]\n\n\n\n\n\n\n\n\nstateDiagram-v2\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  state \"I'm attending\" as attending\n  state \"I'm missing\" as missing\n  online --&gt; attending: 3/3\n  overseas --&gt; missing: 6/6\n  europe --&gt; attending: 1/2\n  europe --&gt; missing: 1/2\n\n\n\n\n\n\n\\[B = \\begin{pmatrix} 1 & 0 \\\\ 1/2 & 1/2 \\\\ 0 & 1 \\end{pmatrix}\\]\n\n\n2024: Eindhoven 2023: Cambridge MA 2022: Online 2021: Online 2020: Online 2019: Baltimore MD 2018: London 2017: Berkeley CA 2016: Cambridge MA 2015: Cambridge MA 2014: Cambridge MA"
+    "text": "Example: my JuliaCon attendance\n\n\n\n\n\n\n\nstateDiagram-v2\n  direction LR\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  online --&gt; overseas: 1\n  overseas --&gt; online: 1\n  overseas --&gt; europe: 2\n  europe --&gt; overseas: 1\n  overseas --&gt; overseas: 3\n  online --&gt; online: 2\n\n\n\n\n\n\n\\[p = \\begin{pmatrix} 0 & 0 & 1 \\end{pmatrix}\\]\n\\[A = \\begin{pmatrix} 2/3 & 1/3 & 0 \\\\ 1/6 & 3/6 & 2/6 \\\\ 0 & 1 & 0 \\end{pmatrix}\\]\n\n\n\n\n\n\n\n\nstateDiagram-v2\n  state \"JuliaCon\\nonline\" as online\n  state \"JuliaCon\\nin Europe\" as europe\n  state \"JuliaCon\\noverseas\" as overseas\n  state \"I'm attending\" as attending\n  state \"I'm missing\" as missing\n  online --&gt; attending: 3\n  overseas --&gt; missing: 6\n  europe --&gt; attending: 1\n  europe --&gt; missing: 1\n\n\n\n\n\n\n\\[B = \\begin{pmatrix} 1 & 0 \\\\ 1/2 & 1/2 \\\\ 0 & 1 \\end{pmatrix}\\]\n\n\n2024: Eindhoven 2023: Cambridge MA 2022: Online 2021: Online 2020: Online 2019: Baltimore MD 2018: London 2017: Berkeley CA 2016: Cambridge MA 2015: Cambridge MA 2014: Cambridge MA"
   },
   {
-    "objectID": "index.html#main-problems",
-    "href": "index.html#main-problems",
+    "objectID": "index.html#main-algorithms",
+    "href": "index.html#main-algorithms",
     "title": "Fast and generic Hidden Markov Models",
-    "section": "Main problems",
-    "text": "Main problems\nGiven an HMM, one may want to:\n\nComputing observation likelihood \\(\\mathbb{P}_\\theta(Y_{1:T})\\)\nInferring hidden state sequence \\(\\mathbb{P}_\\theta(X_{t} | Y_{1:T})\\)\nLearning parameters \\(\\max_\\theta \\mathbb{P}_\\theta(Y_{1:T})\\)\n\nSee the tutorial by Rabiner (1989)"
+    "section": "Main algorithms",
+    "text": "Main algorithms\nGiven an HMM, one may want to:\n\nObservation likelihood \\(\\mathbb{P}_\\theta(Y_{1:T})\\) \\(\\implies\\) Forward\nMost likely states \\(\\underset{X_{1:T}}{\\max} \\mathbb{P}_\\theta(X_{1:T} | Y_{1:T})\\) \\(\\implies\\) Viterbi\nBest parameters \\(\\underset{\\theta}{\\max} \\mathbb{P}_\\theta(Y_{1:T})\\) \\(\\implies\\) Baum-Welch\n\nSee the tutorial by Rabiner (1989) for details."
   },
   {
     "objectID": "index.html#basics",
     "href": "index.html#basics",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Basics",
-    "text": "Basics\nModel creation:\n\nusing HiddenMarkovModels, Distributions, Random\nrng = Random.default_rng()\n\np = [0.0, 0.0, 1.0]\nA = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]\nB = [1 0; 1/2 1/2; 0 1]\ndists = Categorical.(Vector.(eachrow(B)))\nmodel = HMM(p, A, dists);\n\nSimulation:\n\nrand(rng, model, 10)\n\n(state_seq = [3, 2, 3, 2, 3, 2, 2, 2, 3, 2], obs_seq = [2, 1, 2, 1, 2, 2, 2, 2, 2, 2])"
+    "text": "Basics\nModel creation:\n\nusing HiddenMarkovModels, Distributions, Random\nrng = Random.default_rng()\n\np = [0.0, 0.0, 1.0]\nA = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]\nB = [1 0; 1/2 1/2; 0 1]\ndists = Categorical.(Vector.(eachrow(B)))\nmodel = HMM(p, A, dists);\n\nSimulation:\n\nrand(rng, model, 5)\n\n(state_seq = [3, 2, 1, 2, 2], obs_seq = [2, 2, 1, 2, 2])"
   },
   {
     "objectID": "index.html#inference",
     "href": "index.html#inference",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Inference",
-    "text": "Inference\nJuliaCon attendance data:\n\nobs_seq = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1]\nobs_meaning.(obs_seq)\n\n11-element Vector{Symbol}:\n :missing\n :missing\n :missing\n :missing\n :missing\n :missing\n :attending\n :attending\n :attending\n :missing\n :attending"
+    "text": "Inference\nJuliaCon attendance data:\n\nstate_seq = [2, 2, 2, 2, 3, 2, 1, 1, 1, 2, 3]\nobs_seq = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1];\n\nLikelihood:\n\nlogdensityof(model, obs_seq)\n\n-6.954935049252169\n\n\nState sequence:\n\nbest_state_seq, _ = viterbi(model, obs_seq)\n\n([3, 2, 3, 2, 3, 2, 1, 1, 1, 2, 2], [-10.057409634808385])"
   },
   {
-    "objectID": "index.html#previous-state-of-the-art",
-    "href": "index.html#previous-state-of-the-art",
+    "objectID": "index.html#learning",
+    "href": "index.html#learning",
     "title": "Fast and generic Hidden Markov Models",
-    "section": "Previous state of the art",
-    "text": "Previous state of the art\n\nPython:\n\nhmmlearn in NumPy\npomegranate in PyTorch\ndynamax in JAX\n\nJulia: HMMBase.jl\n\nNeed for generality and efficiency"
+    "section": "Learning",
+    "text": "Learning\n\n\n\nlong_obs_seq = rand(rng, model, 1000).obs_seq\np0, A0 = rand_prob_vec(3), rand_trans_mat(3)\nmodel_init = HMM(p0, A0, dists)\n\nmodel_est, logL = baum_welch(\n  model, long_obs_seq);\n\n\ntransition_matrix(model_est)\n\n3×3 Matrix{Float64}:\n 0.667016  0.332984  0.0\n 0.135861  0.493897  0.370242\n 0.0       1.0       0.0\n\n\n\nprobs.(obs_distributions(model_est))\n\n3-element Vector{Vector{Float64}}:\n [1.0, 0.0]\n [0.5407415572021683, 0.45925844279783157]\n [0.0, 0.9999999999999999]"
+  },
+  {
+    "objectID": "index.html#why-a-new-package",
+    "href": "index.html#why-a-new-package",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Why a new package?",
+    "text": "Why a new package?\n\nPython: hmmlearn, pomegranate, dynamax\nJulia: HMMBase.jl, based on Distributions.jl\n\nNeed for a generic, fast and reliable library."
   },
   {
     "objectID": "index.html#number-types",
     "href": "index.html#number-types",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Number types",
-    "text": "Number types\n\n\n\n\n\n\nParametric number types\n\n\nWhat if I want single precision? Or arbitrary precision? Or logarithmic storage?\n\n\n\nReplace Matrix{Float64} with Matrix{&lt;:Real}."
+    "text": "Number types\n\nI need Float64 everywhere or I get really stressed out\nI can handle any real number they throw at me\n\n\n\n\nimport ForwardDiff\n\nf(μ) = logdensityof(\n  HMM(\n    [0.9, 0.1], [0.7 0.3; 0.2 0.8],\n    Normal.(μ, ones(2))\n  ),\n  [-1.0, -1.3, -0.6, 1.4, 1.2, 0.9]\n)\n\nForwardDiff.gradient(f, [-2.0, 2.0])\n\n2-element Vector{Float64}:\n  2.9993145840880095\n -2.7406261032012837\n\n\n\n\n\n\n\n\n\nBenefits\n\n\nVariable precision, automatic differentiation, logarithmic storage.\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nParametric types everywhere, handling promotion correctly."
   },
   {
     "objectID": "index.html#matrix-types",
     "href": "index.html#matrix-types",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Matrix types",
-    "text": "Matrix types\n\n\n\n\n\n\nCustom\n\n\nWhat if I want single precision? Or arbitrary precision? Or uncertainties?"
+    "text": "Matrix types\n\nThe only good matrix is a dense Matrix\nWho’s afraid of the big bad SparseMatrixCSC?\n\n\n\n\nusing SparseArrays\n\nmodel_sp = HMM(p, sparse(A), dists)\nmodel_sp_est, _ = baum_welch(\n  model_sp, long_obs_seq\n)\ntransition_matrix(model_sp_est)\n\n3×3 SparseMatrixCSC{Float64, Int64} with 6 stored entries:\n 0.667016  0.332984   ⋅ \n 0.135861  0.493897  0.370242\n  ⋅        1.0        ⋅ \n\n\n\n\n\n\n\n\n\nBenefits\n\n\nLarge state spaces, realistic transition structures.\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nGeneric updates during parameter estimation."
   },
   {
     "objectID": "index.html#observation-types",
     "href": "index.html#observation-types",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Observation types",
-    "text": "Observation types"
+    "text": "Observation types\n\nDistributions.jl is my whole life\nGive me a sampler + loglikelihood and let’s go\n\n\n\n\nstruct MyDist\n  length::Int\nend\n\n\nBase.rand(\n  rng::AbstractRNG, dist::MyDist\n) = randstring(rng, dist.length)\n\n\nmodel_str = HMM(p, A, MyDist.(1:3))\nrand(rng, model_str, 5)\n\n(state_seq = [3, 2, 3, 2, 1], obs_seq = [\"78Q\", \"Sx\", \"vmd\", \"4n\", \"C\"])\n\n\n\n\n\n\n\n\n\nBenefits\n\n\nArbitrary observations (strings, point processes, images).\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nWhat is the correct interface for these distributions?"
+  },
+  {
+    "objectID": "index.html#automatic-differentiation",
+    "href": "index.html#automatic-differentiation",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Automatic differentiation",
+    "text": "Automatic differentiation\n\nThere are mutations, Zygote.jl will never survive\nMy middle initial is C for ChainRules.jl\n\n\n\n\nimport Zygote\n\nf(μ) = logdensityof(\n  HMM(\n    [0.9, 0.1], [0.7 0.3; 0.2 0.8],\n    Normal.(μ, ones(2))\n  ),\n  [-1.0, -1.3, -0.6, 1.4, 1.2, 0.9]\n)\n\nZygote.gradient(f, [-2.0, 2.0])\n\n([2.999314584088009, -2.740626103201284],)\n\n\n\n\n\n\n\n\n\nBenefits\n\n\nEfficient gradient computations.\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nWriting down the math."
   },
   {
     "objectID": "index.html#controls",
     "href": "index.html#controls",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Controls",
-    "text": "Controls"
+    "text": "Controls\n\nMy HMM never changes, it’s my rock\nBring in the exogenous variables!\n\n\nimport HiddenMarkovModels as HMMs\n\nstruct Dirac; val; end\nstruct DiracHMM &lt;: AbstractHMM; N::Int; end\n\nHMMs.initialization(model::DiracHMM) = ones(model.N) / model.N\nHMMs.transition_matrix(model::DiracHMM, control) = ones(model.N, model.N) / model.N\nHMMs.obs_distributions(::DiracHMM, control) = Dirac(control)\n\n\n\n\n\n\n\n\n\nBenefits\n\n\nTemporal heterogeneity can be modeled.\n\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nMore complicated estimation methods."
   },
   {
-    "objectID": "index.html#automatic-differentiationre",
-    "href": "index.html#automatic-differentiationre",
+    "objectID": "index.html#type-stability",
+    "href": "index.html#type-stability",
     "title": "Fast and generic Hidden Markov Models",
-    "section": "Automatic differentiationre",
-    "text": "Automatic differentiationre"
+    "section": "Type stability",
+    "text": "Type stability\n\nEssential for Just-In-Time compilation to work well\nTested with JET.jl for all major subroutines"
+  },
+  {
+    "objectID": "index.html#no-allocations",
+    "href": "index.html#no-allocations",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "No allocations",
+    "text": "No allocations\n\nCrucial for performance in hot loops\nTested with @allocated for all major subroutines"
+  },
+  {
+    "objectID": "index.html#multithreading",
+    "href": "index.html#multithreading",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Multithreading",
+    "text": "Multithreading\n\nInference and estimation on multiple sequences are embarrassingly parallel\nImplemented with Threads.@threads, potential for multithreaded reductions too"
+  },
+  {
+    "objectID": "index.html#good-practices-in-package-development",
+    "href": "index.html#good-practices-in-package-development",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Good practices in package development",
+    "text": "Good practices in package development\n\nUnit tests\nDocumentation with Documenter.jl\nTutorials with Literate.jl"
+  },
+  {
+    "objectID": "index.html#some-encouraging-benchmarks",
+    "href": "index.html#some-encouraging-benchmarks",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Some encouraging benchmarks",
+    "text": "Some encouraging benchmarks\n\nComparison against Python and Julia competitors"
+  },
+  {
+    "objectID": "index.html#the-role-of-interfaces",
+    "href": "index.html#the-role-of-interfaces",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "The role of interfaces",
+    "text": "The role of interfaces\n\nAbstractArray for transition matrices\nDensityInterface.jl for observation distributions\nAbstractHMM with a handful of functions to handle simulation, inference and learning\n\n\n\n\n\n\n\nFormal specification\n\n\nFor interfaces with precise requirements, “the doc is the API” cannot suffice."
+  },
+  {
+    "objectID": "index.html#publishing-software",
+    "href": "index.html#publishing-software",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Publishing software",
+    "text": "Publishing software\n\nPaper in the Journal of Open Source Software (Dalle 2024)\nPleasant and productive open review process\nPackages are valuable research contributions\nThey need to be cited and recognized"
   },
   {
     "objectID": "index.html#references",
     "href": "index.html#references",
     "title": "Fast and generic Hidden Markov Models",
     "section": "References",
-    "text": "References\n\n\nRabiner, L. R. 1989. “A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition.” Proceedings of the IEEE 77 (2): 257–86. https://doi.org/cswph2.\n\n\nVon Hilgers, Philipp, and Amy N. Langville. 2006. “The Five Greatest Applications of Markov Chains.” In Proceedings of the Markov Anniversary Meeting."
+    "text": "References\n\n\nDalle, Guillaume. 2024. “HiddenMarkovModels.jl: Generic, Fast and Reliable State Space Modeling.” Journal of Open Source Software 9 (96): 6436. https://doi.org/10.21105/joss.06436.\n\n\nRabiner, L. R. 1989. “A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition.” Proceedings of the IEEE 77 (2): 257–86. https://doi.org/cswph2.\n\n\nVon Hilgers, Philipp, and Amy N. Langville. 2006. “The Five Greatest Applications of Markov Chains.” In Proceedings of the Markov Anniversary Meeting."
   }
 ]
