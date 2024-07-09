@@ -12,11 +12,11 @@ bibliography: HMM.bib
 engine: julia
 format:
   revealjs:
-    width: 1280
-    height: 720
     slide-number: true
     overview: true
     code-line-numbers: false
+    scrollable: true
+    theme: [default, custom.scss]
 execute:
     echo: true
 ---
@@ -25,11 +25,11 @@ execute:
 
 ## About me
 
-- Aka `gdalle` on GitHub & Discourse
+- Aka [`gdalle`](https://github.com/gdalle) on GitHub & Discourse
 - Postdoctoral researcher at EPFL (Switzerland)
-- Interested in machine learning and optimization
-- Member of [JuliaDiff](https://juliadiff.org/) and [JuliaGraphs](https://juliagraphs.org/)
+- Interested in machine learning ([JuliaDiff](https://juliadiff.org/)) and optimization ([JuliaGraphs](https://juliagraphs.org/))
 - Check out my website: <https://gdalle.github.io/>
+- Other talk: [_Gradients for everyone: a quick guide to autodiff in Julia_](https://pretalx.com/juliacon2024/talk/YGZYWK/)
 
 ## What is a Hidden Markov Model?
 
@@ -90,15 +90,15 @@ stateDiagram-v2
   state "JuliaCon\nonline" as online
   state "JuliaCon\nin Europe" as europe
   state "JuliaCon\noverseas" as overseas
-  online --> overseas: 1/10
-  overseas --> online: 1/10
-  overseas --> europe: 2/10
-  europe --> overseas: 1/10
-  overseas --> overseas: 3/10
-  online --> online: 2/10
+  online --> overseas: 1
+  overseas --> online: 1
+  overseas --> europe: 2
+  europe --> overseas: 1
+  overseas --> overseas: 3
+  online --> online: 2
 ```
 
-$$\pi = \begin{pmatrix} 0 & 0 & 1 \end{pmatrix}$$
+$$p = \begin{pmatrix} 0 & 0 & 1 \end{pmatrix}$$
 
 $$A = \begin{pmatrix} 2/3 & 1/3 & 0 \\ 1/6 & 3/6 & 2/6 \\ 0 & 1 & 0 \end{pmatrix}$$
 :::
@@ -115,10 +115,10 @@ stateDiagram-v2
   state "JuliaCon\noverseas" as overseas
   state "I'm attending" as attending
   state "I'm missing" as missing
-  online --> attending: 3/3
-  overseas --> missing: 6/6
-  europe --> attending: 1/2
-  europe --> missing: 1/2
+  online --> attending: 3
+  overseas --> missing: 6
+  europe --> attending: 1
+  europe --> missing: 1
 ```
 
 $$B = \begin{pmatrix} 1 & 0 \\ 1/2 & 1/2 \\ 0 & 1 \end{pmatrix}$$
@@ -140,15 +140,15 @@ $$B = \begin{pmatrix} 1 & 0 \\ 1/2 & 1/2 \\ 0 & 1 \end{pmatrix}$$
 2014: Cambridge MA
 :::
 
-## Main problems
+## Main algorithms
 
 Given an HMM, one may want to:
 
-- Computing observation likelihood $\mathbb{P}_\theta(Y_{1:T})$
-- Inferring hidden state sequence $\mathbb{P}_\theta(X_{t} | Y_{1:T})$
-- Learning parameters $\max_\theta \mathbb{P}_\theta(Y_{1:T})$
+- Observation likelihood $\mathbb{P}_\theta(Y_{1:T})$ $\implies$ Forward
+- Most likely states $\underset{X_{1:T}}{\max} \mathbb{P}_\theta(X_{1:T} | Y_{1:T})$ $\implies$ Viterbi
+- Best parameters $\underset{\theta}{\max} \mathbb{P}_\theta(Y_{1:T})$ $\implies$ Baum-Welch
 
-See the tutorial by @rabinerTutorialHiddenMarkov1989
+See the tutorial by @rabinerTutorialHiddenMarkov1989 for details.
 
 # The code
 
@@ -167,7 +167,7 @@ model = HMM(p, A, dists);
 ```
 Simulation:
 ```{julia}
-rand(rng, model, 10)
+rand(rng, model, 5)
 ```
 
 ## Inference
@@ -190,47 +190,340 @@ elseif k == 2
 end;
 ```
 ```{julia}
-obs_seq = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1]
-obs_meaning.(obs_seq)
+state_seq = [2, 2, 2, 2, 3, 2, 1, 1, 1, 2, 3]
+obs_seq = [2, 2, 2, 2, 2, 2, 1, 1, 1, 2, 1];
 ```
 
-# Why a new package?
+Likelihood:
 
-## Previous state of the art
+```{julia}
+logdensityof(model, obs_seq)
+```
 
-- Python:
-  - [`hmmlearn`](https://github.com/hmmlearn/hmmlearn) in NumPy
-  - [`pomegranate`](https://pomegranate.readthedocs.io/) in PyTorch
-  - [`dynamax`](https://github.com/probml/dynamax) in JAX
-- Julia: [HMMBase.jl](https://github.com/maxmouchet/HMMBase.jl) 
+State sequence:
 
-Need for generality and efficiency
+```{julia}
+best_state_seq, _ = viterbi(model, obs_seq)
+```
+
+## Learning
+
+:::: {.columns}
+
+::: {.column width="60%"}
+
+```{julia}
+#| echo: false
+using HiddenMarkovModels: rand_prob_vec, rand_trans_mat
+```
+
+```{julia}
+long_obs_seq = rand(rng, model, 1000).obs_seq
+p0, A0 = rand_prob_vec(3), rand_trans_mat(3)
+model_init = HMM(p0, A0, dists)
+
+model_est, logL = baum_welch(
+  model, long_obs_seq);
+```
+
+```{julia}
+transition_matrix(model_est)
+```
+
+```{julia}
+probs.(obs_distributions(model_est))
+```
+:::
+
+::: {.column width="40%"}
+```{julia}
+#| echo: false
+using CairoMakie
+fig = Figure(size=(400, 400))
+ax = Axis(fig[1, 1], xlabel="Baum-Welch iteration", ylabel="Loglikelihood")
+lines!(ax, logL, linewidth=2)
+fig
+```
+:::
+
+::::
+
+## Why a new package?
+
+- Python: [`hmmlearn`](https://github.com/hmmlearn/hmmlearn), [`pomegranate`](https://pomegranate.readthedocs.io/), [`dynamax`](https://github.com/probml/dynamax)
+- Julia: [HMMBase.jl](https://github.com/maxmouchet/HMMBase.jl), based on [Distributions.jl](https://github.com/JuliaStats/Distributions.jl)
+
+Need for a generic, fast and reliable library.
+
+# More generality
 
 ## Number types
 
-::: {.callout-tip}
-## Parametric number types
+- ~~I need `Float64` everywhere or I get really stressed out~~
+- I can handle any real number they throw at me
 
-What if I want single precision? Or arbitrary precision? Or logarithmic storage?
+::::: {.columns}
+
+:::: {.column width="50%"}
+
+```{julia}
+import ForwardDiff
+
+f(μ) = logdensityof(
+  HMM(
+    [0.9, 0.1], [0.7 0.3; 0.2 0.8],
+    Normal.(μ, ones(2))
+  ),
+  [-1.0, -1.3, -0.6, 1.4, 1.2, 0.9]
+)
+
+ForwardDiff.gradient(f, [-2.0, 2.0])
+```
+
+::::
+
+:::: {.column width="50%"}
+
+::: {.callout-tip}
+## Benefits
+
+Variable precision, automatic differentiation, logarithmic storage.
 :::
 
-Replace `Matrix{Float64}` with `Matrix{<:Real}`.
+::: {.callout-important}
+## Challenges
+
+Parametric types everywhere, handling promotion correctly.
+:::
+
+::::
+
+:::::
 
 ## Matrix types
 
-::: {.callout-tip}
-## Custom 
+- ~~The only good matrix is a dense `Matrix`~~
+- Who's afraid of the big bad `SparseMatrixCSC`?
 
-What if I want single precision? Or arbitrary precision? Or uncertainties?
+::::: {.columns}
+
+:::: {.column width="50%"}
+
+```{julia}
+using SparseArrays
+
+model_sp = HMM(p, sparse(A), dists)
+model_sp_est, _ = baum_welch(
+  model_sp, long_obs_seq
+)
+transition_matrix(model_sp_est)
+```
+
+::::
+
+:::: {.column width="50%"}
+
+::: {.callout-tip}
+## Benefits
+
+Large state spaces, realistic transition structures.
 :::
+
+::: {.callout-important}
+## Challenges
+
+Generic updates during parameter estimation.
+:::
+
+::::
+
+:::::
 
 ## Observation types
 
+- ~~Distributions.jl is my whole life~~
+- Give me a sampler + loglikelihood and let's go
+
+::::: {.columns}
+
+:::: {.column width="50%"}
+
+```{julia}
+struct MyDist
+  length::Int
+end
+```
+```{julia}
+#| echo: false
+import DensityInterface
+using Random: AbstractRNG
+DensityInterface.DensityKind(::MyDist) = DensityInterface.IsDensity()
+```
+```{julia}
+Base.rand(
+  rng::AbstractRNG, dist::MyDist
+) = randstring(rng, dist.length)
+```
+
+```{julia}
+model_str = HMM(p, A, MyDist.(1:3))
+rand(rng, model_str, 5)
+```
+
+::::
+
+:::: {.column width="50%"}
+
+::: {.callout-tip}
+## Benefits
+
+Arbitrary observations (strings, point processes, images).
+:::
+
+::: {.callout-important}
+## Challenges
+
+What is the correct interface for these distributions?
+:::
+
+::::
+
+:::::
+
+## Automatic differentiation
+
+- ~~There are mutations, Zygote.jl will never survive~~
+- My middle initial is C for ChainRules.jl
+
+::::: {.columns}
+
+:::: {.column width="50%"}
+
+```{julia}
+import Zygote
+
+f(μ) = logdensityof(
+  HMM(
+    [0.9, 0.1], [0.7 0.3; 0.2 0.8],
+    Normal.(μ, ones(2))
+  ),
+  [-1.0, -1.3, -0.6, 1.4, 1.2, 0.9]
+)
+
+Zygote.gradient(f, [-2.0, 2.0])
+```
+
+::::
+
+:::: {.column width="50%"}
+
+::: {.callout-tip}
+## Benefits
+
+Efficient gradient computations.
+:::
+
+::: {.callout-important}
+## Challenges
+
+Writing down the math.
+:::
+
+::::
+
+:::::
+
 ## Controls
 
-## Automatic differentiationre
+- ~~My HMM never changes, it's my rock~~
+- Bring in the exogenous variables!
 
-# Appendix
+
+```{julia}
+import HiddenMarkovModels as HMMs
+
+struct Dirac; val; end
+struct DiracHMM <: AbstractHMM; N::Int; end
+
+HMMs.initialization(model::DiracHMM) = ones(model.N) / model.N
+HMMs.transition_matrix(model::DiracHMM, control) = ones(model.N, model.N) / model.N
+HMMs.obs_distributions(::DiracHMM, control) = Dirac(control)
+```
+
+::::: {.columns}
+
+:::: {.column width="50%"}
+
+::: {.callout-tip}
+## Benefits
+
+Temporal heterogeneity can be modeled.
+:::
+
+::::
+
+:::: {.column width="50%"}
+
+::: {.callout-important}
+## Challenges
+
+More complicated estimation methods.
+:::
+
+::::
+
+:::::
+
+# More speed
+
+## Type stability
+
+- Essential for Just-In-Time compilation to work well
+- Tested with [JET.jl](https://github.com/aviatesk/JET.jl) for all major subroutines
+
+## No allocations
+
+- Crucial for performance in hot loops
+- Tested with `@allocated` for all major subroutines
+
+## Multithreading
+
+- Inference and estimation on multiple sequences are embarrassingly parallel
+- Implemented with `Threads.@threads`, potential for multithreaded reductions too
+
+# More reliability
+
+## Good practices in package development
+
+- Unit tests
+- Documentation with [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl)
+- Tutorials with [Literate.jl](https://github.com/JuliaDocs/Documenter.jl)
+
+## Some encouraging benchmarks
+
+![Comparison against Python and Julia competitors](images/benchmark.svg)
+
+# Conclusion
+
+## The role of interfaces
+
+- `AbstractArray` for transition matrices
+- [DensityInterface.jl](https://github.com/JuliaMath/DensityInterface.jl) for observation distributions
+- [`AbstractHMM`](https://gdalle.github.io/HiddenMarkovModels.jl/stable/api/#HiddenMarkovModels.AbstractHMM) with a handful of functions to handle simulation, inference and learning
+
+::: {.callout-warning}
+## Formal specification
+
+For interfaces with precise requirements, "the doc is the API" cannot suffice.
+:::
+
+
+## Publishing software
+
+- Paper in the Journal of Open Source Software [@dalleHiddenMarkovModelsJlGeneric2024]
+- Pleasant and productive open review process
+- Packages are valuable research contributions
+- They need to be cited and recognized
 
 ## References
 
