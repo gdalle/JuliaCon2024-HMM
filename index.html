@@ -437,6 +437,10 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 
   <p class="date">2024-07-12</p>
 </section>
+<section id="slides-link" class="slide level2">
+<h2>Slides link</h2>
+<p><a href="https://gdalle.github.io/JuliaCon2024-HMM/">gdalle.github.io/JuliaCon2024-HMM/</a></p>
+</section>
 <section>
 <section id="introduction" class="title-slide slide level1 center">
 <h1>Introduction</h1>
@@ -600,7 +604,7 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <div id="4" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">rand</span>(rng, model, <span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>(state_seq = [3, 2, 1, 2, 2], obs_seq = [2, 2, 1, 2, 2])</code></pre>
+<pre><code>(state_seq = [3, 2, 2, 2, 3], obs_seq = [2, 2, 1, 1, 2])</code></pre>
 </div>
 </div>
 </section>
@@ -642,8 +646,8 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a aria-hidden="true" tabindex="-1"></a><span class="fu">transition_matrix</span>(model_est)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>3×3 Matrix{Float64}:
- 0.667016  0.332984  0.0
- 0.135861  0.493897  0.370242
+ 0.660929  0.339071  0.0
+ 0.203221  0.352171  0.444608
  0.0       1.0       0.0</code></pre>
 </div>
 </div>
@@ -652,8 +656,8 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>3-element Vector{Vector{Float64}}:
  [1.0, 0.0]
- [0.5407415572021683, 0.45925844279783157]
- [0.0, 0.9999999999999999]</code></pre>
+ [0.5311920571169335, 0.4688079428830663]
+ [0.0, 1.0]</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:40%;">
@@ -754,8 +758,8 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <span id="cb16-7"><a aria-hidden="true" tabindex="-1"></a><span class="fu">transition_matrix</span>(model_sp_est)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
 <pre><code>3×3 SparseMatrixCSC{Float64, Int64} with 6 stored entries:
- 0.667016  0.332984   ⋅ 
- 0.135861  0.493897  0.370242
+ 0.660929  0.339071   ⋅ 
+ 0.203221  0.352171  0.444608
   ⋅        1.0        ⋅ </code></pre>
 </div>
 </div>
@@ -810,7 +814,7 @@ Guillaume Dalle <a href="https://orcid.org/0000-0003-4866-1687" class="quarto-ti
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a aria-hidden="true" tabindex="-1"></a>model_str <span class="op">=</span> <span class="fu">HMM</span>(p, A, <span class="fu">MyDist</span>.(<span class="fl">1</span><span class="op">:</span><span class="fl">3</span>))</span>
 <span id="cb20-2"><a aria-hidden="true" tabindex="-1"></a><span class="fu">rand</span>(rng, model_str, <span class="fl">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="1">
-<pre><code>(state_seq = [3, 2, 3, 2, 1], obs_seq = ["78Q", "Sx", "vmd", "4n", "C"])</code></pre>
+<pre><code>(state_seq = [3, 2, 3, 2, 3], obs_seq = ["wJi", "s1", "lDn", "Kk", "09G"])</code></pre>
 </div>
 </div>
 </div><div class="column" style="width:50%;">

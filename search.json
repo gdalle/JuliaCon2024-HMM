@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "index.html#slides-link",
+    "href": "index.html#slides-link",
+    "title": "Fast and generic Hidden Markov Models",
+    "section": "Slides link",
+    "text": "Slides link\ngdalle.github.io/JuliaCon2024-HMM/"
+  },
+  {
     "objectID": "index.html#about-me",
     "href": "index.html#about-me",
     "title": "Fast and generic Hidden Markov Models",
@@ -46,7 +53,7 @@
     "href": "index.html#basics",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Basics",
-    "text": "Basics\nModel creation:\n\nusing HiddenMarkovModels, Distributions, Random\nrng = Random.default_rng()\n\np = [0.0, 0.0, 1.0]\nA = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]\nB = [1 0; 1/2 1/2; 0 1]\ndists = Categorical.(Vector.(eachrow(B)))\nmodel = HMM(p, A, dists);\n\nSimulation:\n\nrand(rng, model, 5)\n\n(state_seq = [3, 2, 1, 2, 2], obs_seq = [2, 2, 1, 2, 2])"
+    "text": "Basics\nModel creation:\n\nusing HiddenMarkovModels, Distributions, Random\nrng = Random.default_rng()\n\np = [0.0, 0.0, 1.0]\nA = [2/3 1/3 0; 1/6 3/6 2/6; 0 1 0]\nB = [1 0; 1/2 1/2; 0 1]\ndists = Categorical.(Vector.(eachrow(B)))\nmodel = HMM(p, A, dists);\n\nSimulation:\n\nrand(rng, model, 5)\n\n(state_seq = [3, 2, 2, 2, 3], obs_seq = [2, 2, 1, 1, 2])"
   },
   {
     "objectID": "index.html#inference",
@@ -60,7 +67,7 @@
     "href": "index.html#learning",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Learning",
-    "text": "Learning\n\n\n\nlong_obs_seq = rand(rng, model, 1000).obs_seq\np0, A0 = rand_prob_vec(3), rand_trans_mat(3)\nmodel_init = HMM(p0, A0, dists)\n\nmodel_est, logL = baum_welch(\n  model, long_obs_seq);\n\n\ntransition_matrix(model_est)\n\n3×3 Matrix{Float64}:\n 0.667016  0.332984  0.0\n 0.135861  0.493897  0.370242\n 0.0       1.0       0.0\n\n\n\nprobs.(obs_distributions(model_est))\n\n3-element Vector{Vector{Float64}}:\n [1.0, 0.0]\n [0.5407415572021683, 0.45925844279783157]\n [0.0, 0.9999999999999999]"
+    "text": "Learning\n\n\n\nlong_obs_seq = rand(rng, model, 1000).obs_seq\np0, A0 = rand_prob_vec(3), rand_trans_mat(3)\nmodel_init = HMM(p0, A0, dists)\n\nmodel_est, logL = baum_welch(\n  model, long_obs_seq);\n\n\ntransition_matrix(model_est)\n\n3×3 Matrix{Float64}:\n 0.660929  0.339071  0.0\n 0.203221  0.352171  0.444608\n 0.0       1.0       0.0\n\n\n\nprobs.(obs_distributions(model_est))\n\n3-element Vector{Vector{Float64}}:\n [1.0, 0.0]\n [0.5311920571169335, 0.4688079428830663]\n [0.0, 1.0]"
   },
   {
     "objectID": "index.html#why-a-new-package",
@@ -81,14 +88,14 @@
     "href": "index.html#matrix-types",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Matrix types",
-    "text": "Matrix types\n\nThe only good matrix is a dense Matrix\nWho’s afraid of the big bad SparseMatrixCSC?\n\n\n\n\nusing SparseArrays\n\nmodel_sp = HMM(p, sparse(A), dists)\nmodel_sp_est, _ = baum_welch(\n  model_sp, long_obs_seq\n)\ntransition_matrix(model_sp_est)\n\n3×3 SparseMatrixCSC{Float64, Int64} with 6 stored entries:\n 0.667016  0.332984   ⋅ \n 0.135861  0.493897  0.370242\n  ⋅        1.0        ⋅ \n\n\n\n\n\n\n\n\n\nBenefits\n\n\nLarge state spaces, realistic transition structures.\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nGeneric updates during parameter estimation."
+    "text": "Matrix types\n\nThe only good matrix is a dense Matrix\nWho’s afraid of the big bad SparseMatrixCSC?\n\n\n\n\nusing SparseArrays\n\nmodel_sp = HMM(p, sparse(A), dists)\nmodel_sp_est, _ = baum_welch(\n  model_sp, long_obs_seq\n)\ntransition_matrix(model_sp_est)\n\n3×3 SparseMatrixCSC{Float64, Int64} with 6 stored entries:\n 0.660929  0.339071   ⋅ \n 0.203221  0.352171  0.444608\n  ⋅        1.0        ⋅ \n\n\n\n\n\n\n\n\n\nBenefits\n\n\nLarge state spaces, realistic transition structures.\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nGeneric updates during parameter estimation."
   },
   {
     "objectID": "index.html#observation-types",
     "href": "index.html#observation-types",
     "title": "Fast and generic Hidden Markov Models",
     "section": "Observation types",
-    "text": "Observation types\n\nDistributions.jl is my whole life\nGive me a sampler + loglikelihood and let’s go\n\n\n\n\nstruct MyDist\n  length::Int\nend\n\n\nBase.rand(\n  rng::AbstractRNG, dist::MyDist\n) = randstring(rng, dist.length)\n\n\nmodel_str = HMM(p, A, MyDist.(1:3))\nrand(rng, model_str, 5)\n\n(state_seq = [3, 2, 3, 2, 1], obs_seq = [\"78Q\", \"Sx\", \"vmd\", \"4n\", \"C\"])\n\n\n\n\n\n\n\n\n\nBenefits\n\n\nArbitrary observations (strings, point processes, images).\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nWhat is the correct interface for these distributions?"
+    "text": "Observation types\n\nDistributions.jl is my whole life\nGive me a sampler + loglikelihood and let’s go\n\n\n\n\nstruct MyDist\n  length::Int\nend\n\n\nBase.rand(\n  rng::AbstractRNG, dist::MyDist\n) = randstring(rng, dist.length)\n\n\nmodel_str = HMM(p, A, MyDist.(1:3))\nrand(rng, model_str, 5)\n\n(state_seq = [3, 2, 3, 2, 3], obs_seq = [\"wJi\", \"s1\", \"lDn\", \"Kk\", \"09G\"])\n\n\n\n\n\n\n\n\n\nBenefits\n\n\nArbitrary observations (strings, point processes, images).\n\n\n\n\n\n\n\n\n\nChallenges\n\n\nWhat is the correct interface for these distributions?"
   },
   {
     "objectID": "index.html#automatic-differentiation",
