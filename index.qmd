@@ -21,6 +21,10 @@ execute:
     echo: true
 ---
 
+## Slides link
+
+[gdalle.github.io/JuliaCon2024-HMM/](https://gdalle.github.io/JuliaCon2024-HMM/)
+
 # Introduction
 
 ## About me
